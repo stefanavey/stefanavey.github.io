@@ -1,0 +1,58 @@
+---
+title: "First Blog Post"
+published: false
+status: process
+layout: post
+---    
+{% include JB/setup %}
+
+# This is a test
+
+```{r createDocument, eval=FALSE, echo=FALSE}
+
+################################################################################
+## Welcome.Rmd
+## Short Summary: Testing how long it takes me to go from markdown to a final blog post
+## Header generated automatically by TEMPLATE.Rmd.tpl
+################################################################################
+## Use Rmarkdown to render the document into the file type specified in the
+## header
+## install.packages('RWordPress', repos = 'http://www.omegahat.org/R', type = 'source')
+## library(RWordPress) 
+## library(knitr)
+## library(aveytoolkit)
+## Trying for Wordpress
+## credentials <- getLoginDetails()
+## options(WordpressLogin = c(user = credentials["password"]),
+##         WordpressURL = paste0("http://", credentials["loginID"], ".wordpress.com/xmlrpc.php"))
+## knit2wp('Welcome.Rmd', title = 'Test Blog Post', action="newPost", shortcode=TRUE, publish=FALSE)
+## library(rmarkdown)
+## rmarkdown::render("Welcome.Rmd")
+
+baseDir <- "~/Documents/Blog/stefanavey.github.com"
+curDir <- file.path(baseDir, "_posts")
+setwd(curDir)
+imageDir <- paste0(curDir, "/images/")
+## library(knitr)
+figPath <- "../images/"
+source(file.path(baseDir, "rmarkdown.r"))
+convertRMarkdown(images.url="/images/")
+
+
+```
+
+## Simply run some R code and finish
+
+```{r setup, eval=TRUE, echo=TRUE, message=FALSE, fig.path=figPath}
+
+library(aveytoolkit)
+x <- c(1,2,3,4)
+
+## List the session information 
+sessionInfo()
+
+plot(1:10, 1:10)
+
+```
+
+
