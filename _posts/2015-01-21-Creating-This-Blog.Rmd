@@ -1,0 +1,59 @@
+---
+title: Creating this Blog
+tagline: How you can learn from me and do it much quicker
+published: false
+status: process
+layout: post
+---    
+{% include JB/setup %}
+
+```{r createDocument, eval=FALSE, echo=FALSE}
+
+################################################################################
+## /_posts/2015-01-21-Creating-This-Blog.Rmd
+## Short Summary: Post on how I created my blog
+## Header generated automatically by TEMPLATE.Rmd.tpl
+################################################################################
+library(knitr)
+baseDir <- "~/Documents/Blog/stefanavey.github.io"
+curDir <- file.path(baseDir, "_posts")
+setwd(curDir)
+imageDir <- paste0(curDir, "/images/")
+figPath <- "../images/"
+source(file.path(baseDir, "rmarkdown.r"))
+convertRMarkdown(images.url="/images/")
+
+```
+
+
+# How to begin
+Soon I will start this post about how I created this blog, for now, just test that things are working as they should.
+
+# Test functionality
+
+## Test syntax and output using R
+
+Simply run some R basic R code and finish
+
+```{r setup, eval=TRUE, echo=TRUE, message=FALSE, fig.path=figPath}
+
+## List the session information 
+sessionInfo()
+
+## Testing whether plots are included
+plot(1:10, 1:10)
+
+```
+
+## Test syntax and output using elisp
+```{r test, engine='python', eval=FALSE}
+opts_chunk$set(engine = 'lisp')
+(defun spa-find-gene-info ()
+  "Opens a browser to view gene annotation for the gene symbol near the point"
+(interactive)
+    (let (geneID)
+    (setq geneID (thing-at-point 'word))
+(browse-url (concatenate 'string "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" geneID)))
+  )
+  (global-set-key "\C-cg" 'spa-find-gene-info)
+```

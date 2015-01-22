@@ -1,7 +1,6 @@
 ---
 layout: page
-title: Hello World Wide Web!
-tagline: main page
+title: Home
 ---
 {% include JB/setup %}
 
