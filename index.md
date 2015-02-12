@@ -4,9 +4,7 @@ title: Home
 ---
 {% include JB/setup %}
 
-## Sample Posts
-
-Here's a sample "posts list".
+## Recent Posts
 
 <ul class="posts">
   {% for post in site.posts %}

@@ -47,7 +47,6 @@ plot(1:10, 1:10)
 
 ## Test syntax and output using elisp
 ```{r test, engine='python', eval=FALSE}
-opts_chunk$set(engine = 'lisp')
 (defun spa-find-gene-info ()
   "Opens a browser to view gene annotation for the gene symbol near the point"
 (interactive)
