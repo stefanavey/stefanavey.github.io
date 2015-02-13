@@ -1,6 +1,5 @@
 ---
-title: Creating this Blog
-tagline: How you can learn from me and do it much quicker
+title: Test R Markdown
 published: true
 status: publish
 layout: post
@@ -43,18 +42,11 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] aveytoolkit_0.1 knitr_1.9      
+## [1] knitr_1.9
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bitops_1.0-6       caTools_1.17       colorspace_1.2-4  
-##  [4] compiler_3.1.2     digest_0.6.4       evaluate_0.5.5    
-##  [7] formatR_1.0        gdata_2.13.3       ggplot2_1.0.0     
-## [10] gplots_2.13.0      grid_3.1.2         gtable_0.1.2      
-## [13] gtools_3.4.1       KernSmooth_2.23-13 limma_3.16.8      
-## [16] MASS_7.3-33        munsell_0.4.2      plyr_1.8.1        
-## [19] proto_0.3-10       Rcpp_0.11.1        reshape2_1.4      
-## [22] scales_0.2.4       stringr_0.6.2      tcltk_3.1.2       
-## [25] tools_3.1.2
+## [1] compiler_3.1.2 evaluate_0.5.5 formatR_1.0    stringr_0.6.2 
+## [5] tools_3.1.2
 {% endhighlight %}
 
 

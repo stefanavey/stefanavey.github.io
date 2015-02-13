@@ -31,9 +31,9 @@ convertRMarkdown <- function(dir=getwd(), images.dir=dir, images.url='/images/',
         status <- sub('[[:space:]]+$', '', status)
         status <- sub('^[[:space:]]+', '', status)
         if(tolower(status) == 'process') {
-                                        #This is a bit of a hack but if a line has zero length (i.e. a
-                                        #black line), it will be removed in the resulting markdown file.
-                                        #This will ensure that all line returns are retained.
+          ## This is a bit of a hack but if a line has zero length (i.e. a
+          ## black line), it will be removed in the resulting markdown file.
+          ## This will ensure that all line returns are retained.
           content[nchar(content) == 0] <- ' '
           message(paste('Processing ', f, sep=''))
           content[statusLine] <- 'status: publish'

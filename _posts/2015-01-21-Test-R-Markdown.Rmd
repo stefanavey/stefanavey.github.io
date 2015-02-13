@@ -1,6 +1,5 @@
 ---
-title: Creating this Blog
-tagline: How you can learn from me and do it much quicker
+title: Test R Markdown
 published: false
 status: process
 layout: post
