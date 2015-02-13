@@ -2,7 +2,7 @@
 title: Creating This Blog
 layout: post
 category : lessons
-tagline: "How to set this up"
+tagline: How to get up and running
 tags : [blog, jekyll, github]
 ---
 {% include JB/setup %}

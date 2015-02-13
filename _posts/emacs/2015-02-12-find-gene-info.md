@@ -1,8 +1,8 @@
 ---
-title: Gene Information Inside Emacs
+title: Gene Summaries Inside Emacs
 layout: post
 category : lessons
-tagline: "Quick gene info without leaving home"
+tagline: Get gene info without leaving home row
 tags : [emacs, bioinformatics, tutorial]
 ---
 {% include JB/setup %}

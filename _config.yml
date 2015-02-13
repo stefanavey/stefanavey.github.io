@@ -9,7 +9,7 @@ highlighter: pygments
 # so be sure to set them if your theme uses them.
 #
 title : Stefantastic
-# tagline: 
+tagline: blog
 author :
   name : Stefan Avey
   # email : blah@email.test
@@ -26,6 +26,9 @@ author :
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
 production_url : http://stefanavey.github.io
+
+## The number of posts per page
+paginate: 3
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
@@ -78,12 +81,10 @@ JB :
   # Settings for comments helper
   # Set 'provider' to the comment provider you want to use.
   # Set 'provider' to false to turn commenting off globally.
-  #
-  ## Turned these off!
-  # comments :
-  #   provider : disqus
-  #   disqus :
-  #     short_name : jekyllbootstrap
+  comments :
+    provider : disqus
+    disqus :
+      short_name : stefantastic
   #   livefyre :
   #     site_id : 123
   #   intensedebate :
