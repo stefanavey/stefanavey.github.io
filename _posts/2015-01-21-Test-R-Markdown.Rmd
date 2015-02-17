@@ -3,6 +3,7 @@ title: Test R Markdown
 published: false
 status: process
 layout: post
+category: test
 ---    
 {% include JB/setup %}
 
@@ -24,9 +25,6 @@ convertRMarkdown(images.url="/images/")
 
 ```
 
-
-# How to begin
-Soon I will start this post about how I created this blog, for now, just test that things are working as they should.
 
 # Test functionality
 

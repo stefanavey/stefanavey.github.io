@@ -3,14 +3,12 @@ title: Test R Markdown
 published: true
 status: publish
 layout: post
+category: test
 ---    
 {% include JB/setup %}
  
 
  
- 
-# How to begin
-Soon I will start this post about how I created this blog, for now, just test that things are working as they should.
  
 # Test functionality
  
