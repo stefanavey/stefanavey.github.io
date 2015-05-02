@@ -1,17 +1,17 @@
-#' This R script will process all R mardown files (those with in_ext file extention,
-#' .rmd by default) in the current working directory. Files with a status of
-#' 'processed' will be converted to markdown (with out_ext file extention, '.markdown'
-#' by default). It will change the published parameter to 'true' and change the
-#' status parameter to 'publish'.
-#'
-#' @param dir the directory to process R Markdown files.
-#' @param images.dir the base directory where images will be generated.
-#' @param images.url
-#' @param out_ext the file extention to use for processed files.
-#' @param in_ext the file extention of input files to process.
-#' @param recursive should rmd files in subdirectories be processed.
-#' @return nothing.
-#' @author Jason Bryer <jason@bryer.org>
+##' This R script will process all R mardown files (those with in_ext file extention,
+##' .rmd by default) in the current working directory. Files with a status of
+##' 'processed' will be converted to markdown (with out_ext file extention, '.markdown'
+##' by default). It will change the published parameter to 'true' and change the
+##' status parameter to 'publish'.
+##'
+##' @param dir the directory to process R Markdown files.
+##' @param images.dir the base directory where images will be generated.
+##' @param images.url 
+##' @param out_ext the file extention to use for processed files.
+##' @param in_ext the file extention of input files to process.
+##' @param recursive should rmd files in subdirectories be processed.
+##' @return nothing.
+##' @author Jason Bryer <jason@bryer.org>
 convertRMarkdown <- function(dir=getwd(), images.dir=dir, images.url='/images/',
                              out_ext='.markdown', in_ext='.rmd', recursive=FALSE) {
   require(knitr, quietly=TRUE, warn.conflicts=FALSE)

@@ -111,15 +111,17 @@ Then I modified my Emacs lisp function to open this local HTML file (if it exist
 {% highlight elisp %}
 
 (defun spa-find-gene-info ()
-"If an html file exists in the database for the geneID, open it inside emacs.
-Otherwise, open a browser to view gene annotation for the gene symbol near the point"
+  "If an html file exists in the database for the geneID, open it in view mode inside emacs.
+   Otherwise, open a browser to view gene annotation from Gene Cards for the gene symbol near the point"
   (interactive)
-  (let (geneID)
-  (setq geneID (thing-at-point 'word))
-  (if (string-integer-p geneID)
-  (browse-url-emacs (concatenate 'string "http://www.ncbi.nlm.nih.gov/gene/" geneID "?report=full_report&format=text"))
-  (browse-url (concatenate 'string "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" geneID)))
-  ))
+  (let (geneID fName)
+    (setq geneID (thing-at-point 'word))
+    (setq fName (concatenate 'string "~/.emacs.d/spa-find-gene-info/database/"
+                             geneID ".html"))
+    (if (file-exists-p fName)
+        (view-file-other-window fName) 	; view-file prevents editing and can easily be closed with q
+      (browse-url (concatenate 'string "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" geneID)))
+    ))
 (global-set-key "\C-cg" 'spa-find-gene-info)
 
 {% endhighlight %}
@@ -153,4 +155,4 @@ This could be extended to other identifiers as well (one-to-many mappings might 
 
 ## Other solutions
 
-I called this an "elegant solution" but really what I should say is this is the "most elegant I've found so far."  I would love to hear feedback on alternative strategies from others!
+I called this an "elegant solution" but really what I should say is this is the "most efficient way I've found so far."  I would love to hear feedback on alternative strategies from others!
