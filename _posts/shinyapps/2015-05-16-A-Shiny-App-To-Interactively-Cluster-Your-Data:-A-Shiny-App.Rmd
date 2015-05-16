@@ -1,6 +1,6 @@
 ---
 title: A Shiny App To Interactively Cluster Your Data
-published: true
+published: false
 status: process
 layout: post
 category: r
