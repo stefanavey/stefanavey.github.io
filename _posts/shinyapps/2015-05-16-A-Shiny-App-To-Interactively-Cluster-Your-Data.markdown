@@ -4,6 +4,7 @@ published: true
 status: publish
 layout: post
 category: r
+tags : [R, shiny, bioinformatics]
 ---
 {% include JB/setup %}
  
