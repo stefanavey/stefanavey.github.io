@@ -1,5 +1,5 @@
 ---
-title: Interactive Clustering Shiny App
+title: Interactively Cluster Your Data: A Shiny App
 published: false
 status: process
 layout: post
