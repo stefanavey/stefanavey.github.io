@@ -1,0 +1,17 @@
+---
+title: Visualizing the Lectionary
+published: false
+status: process
+layout: post
+category : r
+tags : [bible, catholic, visualization]
+---
+* Resources
+
+All credit to Felix Just, S.J., Ph.D. for compiling these resources:
+
+- [Biblical Book Names & Abbreviations](http://catholic-resources.org/Bible/Abbreviations-Abreviaciones.htm)
+- [Old Testament Reference](http://catholic-resources.org/Bible/OT-Statistics-Compared.htm)
+- [New Testament Reference](http://catholic-resources.org/Bible/NT-Statistics-Greek.htm)
+- [Scripture Index of Lectionary Readings Used for Weekday Masses](http://catholic-resources.org/Lectionary/Index-Weekdays.htm)
+- [Scripture Index of Lectionary Readings Used for Sundays and Major Feasts](http://catholic-resources.org/Lectionary/Index-Sundays.htm)
