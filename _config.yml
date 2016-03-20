@@ -1,9 +1,7 @@
 # Permalinks
 #
-# Use of `relative_permalinks` ensures post links from the index work properly.
 permalink: /:categories/:year/:month/:day/:title
 # permalink: "/:title"
-relative_permalinks: true
 
 highlighter: pygments
 
