@@ -13,7 +13,7 @@ tags : [R, shiny, bioinformatics]
 
 # Brief Summary
 
-I built an interactive, online App using Shiny where you can upload your own data (for an example, [download mtcars](https://internal.shinyapps.io/gallery/066-upload-file/mtcars.csv)) and perform basic clustering analysis and view correlations in a heatmap.
+I built an interactive, online App using Shiny where you can upload your own data (for an example, [download mtcars](https://gallery.shinyapps.io/066-upload-file/_w_7e163e33/mtcars.csv)) and perform basic clustering analysis and view correlations in a heatmap.
 
 [View the Shiny App Here](https://avey.shinyapps.io/cluster-analysis/) and [the Source Code here](https://github.com/stefanavey/cluster-analysis).
 
@@ -127,4 +127,4 @@ I only discovered this more detailed error message by running shinyApps::bundleA
 
 # Implementation
 
-[Take a look at the Shiny App here](https://avey.shinyapps.io/cluster-analysis/) and [the Source Code](https://github.com/stefanavey/cluster-analysis) and leave a comment to let me know what you think! You can download a sample data set ([mtcars](https://internal.shinyapps.io/gallery/066-upload-file/mtcars.csv)) to try out if you don't have your own.
+[Take a look at the Shiny App here](https://avey.shinyapps.io/cluster-analysis/) and [the Source Code](https://github.com/stefanavey/cluster-analysis) and leave a comment to let me know what you think! You can download a sample data set ([mtcars](https://gallery.shinyapps.io/066-upload-file/_w_7e163e33/mtcars.csv)) to try out if you don't have your own.
