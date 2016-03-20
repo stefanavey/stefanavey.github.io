@@ -9,7 +9,7 @@ tags : [R, shiny, bioinformatics]
 {% include JB/setup %}
 
 # UPDATE
-**Since writing this post I've re-implemented the app as a dashboard.  View the [dashboard version](https://sparsedata.shinyapps.io/SparseData-Cluster),  [source code](https://github.com/sparsedata/cluster-analysis), and [new blog post](http://stefanavey.github.io/r/2015/07/29/A-Dashboard-Implementation-Of-Clustering-App/).**
+**Since writing this post I've re-implemented the app as a dashboard.  View the [dashboard version](https://sparsedata.shinyapps.io/SparseData-Cluster),  [source code](https://github.com/sparsedata/cluster-analysis), and [new blog post](http://stefanavey.github.io/r/2015/07/29/A-Dashboard-Implementation-Of-Clustering-App).**
 
 # Brief Summary
 

@@ -37,10 +37,9 @@ title : Stefantastic
 tagline: blog
 author :
   name : Stefan Avey
-  # email : blah@email.test
-  github_username : stefanavey
-  # twitter : username
-  # feedburner : feedname
+  email :
+  twitter :
+  feedburner :
 production_url : http://stefanavey.github.io
 paginate: 3
 # baseurl:             "/sa"
@@ -49,8 +48,8 @@ paginate: 3
 #
 # We specify the directory for Jekyll so we can use @imports.
 sass:
-  sass_dir:          _sass
-  style:            :compressed
+  sass_dir: _sass
+  style: compressed
 
 # About/contact
 author:
@@ -61,7 +60,8 @@ author:
 # Custom vars
 version:             1.0.0
 github:
-  repo:              https://github.com/stefanavey/stefanavey.github.io/
+  username: stefanavey
+  repository: stefanavey.github.io
 
 # Google sitemap generation
 gems:

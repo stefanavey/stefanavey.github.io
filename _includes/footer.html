@@ -7,8 +7,14 @@
       with help from <a href="https://jekyllrb.com" target="_blank" >Jekyll</a> <!-- and Vitaly Repin's <a href="https://github.com/vitalyrepin/vrepinblog" target="_blank" >blog</a> -->
     <p>
 
-    <p> View <a href="http://github.com/stefanavey/stefanavey.github.io" target="_blank" title="stefanavey.github.io Source">source</a> on Github
-    </p>
+      {% if site.github.username %}
+      <div class="inline-btn">
+	<a class="btn-social github" href="https://www.github.com/{{ site.github.username }}/{{ site.github.repository }}" target="_blank"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
+      </div>
+      {% endif %}
+
+    <!-- <p> View <a href="http://github.com/stefanavey/stefanavey.github.io" target="_blank" title="stefanavey.github.io Source">source</a> on Github -->
+    <!-- </p> -->
 
 
     <!-- Trying to get Github icon  -->
