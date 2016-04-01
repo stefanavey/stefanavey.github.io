@@ -3,7 +3,7 @@
 permalink: /:categories/:year/:month/:day/:title
 # permalink: "/:title"
 
-highlighter: rouge
+highlighter: pygments # rouge
 
 # Default YAML frontmatter settings
 defaults:
@@ -33,7 +33,7 @@ exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 #fb_appid:           337414769782635
 
 # Setup
-title : Stefantastic
+title : Stefan Avey
 tagline: blog
 author :
   name : Stefan Avey
