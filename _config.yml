@@ -68,7 +68,7 @@ gems:
   - jekyll-sitemap
 
 # Conversion
-markdown:    redcarpet
+markdown:    kramdown
 excerpt_separator: "<!--break-->"
 
 redcarpet:
