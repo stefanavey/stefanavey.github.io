@@ -3,7 +3,7 @@
 permalink: /:categories/:year/:month/:day/:title
 # permalink: "/:title"
 
-highlighter: pygments # rouge
+highlighter: rouge # pygments was old highlighter
 
 # Default YAML frontmatter settings
 defaults:
