@@ -1,0 +1,39 @@
+<footer>
+  <center>
+    <small>
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+
+    <p>&copy; {{ site.author.name }} <time datetime="{{ site.time | date_to_xmlschema }}">{{ site.time | date: '%Y' }}</time>
+      with help from <a href="https://jekyllrb.com" target="_blank" >Jekyll</a> <!-- and Vitaly Repin's <a href="https://github.com/vitalyrepin/vrepinblog" target="_blank" >blog</a> -->
+    <p>
+
+      {% if site.github.username %}
+      <div class="inline-btn">
+	<a class="btn-social github" href="https://www.github.com/{{ site.github.username }}/{{ site.github.repository }}" target="_blank"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
+      </div>
+      {% endif %}
+
+    <!-- <p> View <a href="http://github.com/stefanavey/stefanavey.github.io" target="_blank" title="stefanavey.github.io Source">source</a> on Github -->
+    <!-- </p> -->
+
+
+    <!-- Trying to get Github icon  -->
+
+    <!-- <a href="https://github.com/stefanavey/stefanavey.github.io/"><img alt="Github Repos" style="border-width:0" <i class="fa fa-github"></i> </a> -->
+
+    <!-- <div class="footer-col footer-col-2"> -->
+    <!--   <ul class="social-media-list"> -->
+	<!-- {% if site.github_username %} -->
+	<!-- <li> -->
+	  <!-- {% include icon-github.html username=site.github_username %} -->
+	<!-- </li> -->
+	<!-- {% endif %} -->
+
+    <!--   </ul> -->
+    <!-- </div> -->
+
+  </small>
+  </center>
+</footer>
+
+

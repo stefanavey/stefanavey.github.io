@@ -10,7 +10,7 @@ tags : [R, shiny, bioinformatics]
 
 # Background
 
-I previously built an interactive, online App using Shiny where you can upload your own data, perform basic clustering analysis, and view correlations in a heatmap.  I wrote about this in my [last post](http://stefanavey.github.io/r/2015/05/16/A-Shiny-App-To-Interactively-Cluster-Your-Data/). While this worked, it was very ugly and needed a face lift.  With the help of a friend, I implemented a dashboard using [shinydashboard](https://rstudio.github.io/shinydashboard/).
+I previously built an interactive, online App using Shiny where you can upload your own data, perform basic clustering analysis, and view correlations in a heatmap.  I wrote about this in my [last post](http://stefanavey.github.io/r/2015/05/16/A-Shiny-App-To-Interactively-Cluster-Your-Data). While this worked, it was very ugly and needed a face lift.  With the help of a friend, I implemented a dashboard using [shinydashboard](https://rstudio.github.io/shinydashboard/).
 
 # New implementation
 
