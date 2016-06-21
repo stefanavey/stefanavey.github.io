@@ -15,3 +15,10 @@ All credit to Felix Just, S.J., Ph.D. for compiling these resources:
 - [New Testament Reference](http://catholic-resources.org/Bible/NT-Statistics-Greek.htm)
 - [Scripture Index of Lectionary Readings Used for Weekday Masses](http://catholic-resources.org/Lectionary/Index-Weekdays.htm)
 - [Scripture Index of Lectionary Readings Used for Sundays and Major Feasts](http://catholic-resources.org/Lectionary/Index-Sundays.htm)
+
+* Tricky things in the data I had to fix
+
+'—' vs '-' for string processing. Replaced all of the former with the latter in the files to make processing easier
+
+
+"Eccl 1:2, 2:21-23" should be "Eccl 1:2; 2:21-23"
