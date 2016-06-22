@@ -164,7 +164,7 @@ readingParser <- function(str, ref) {
   cvs <- paste(split1[-aind], collapse = "")
   ## Remove any letters (like 12:1-4a should be 12:1-4)
   cvs <- gsub("[a-z]", "", cvs)
-  cvs <- gsub("+", ",", cvs, fixed=TRUE)  
+  cvs <- gsub("+", ",", cvs, fixed=TRUE)
   ## If semicolon, then things get more complicated
   chvs <- strsplit(cvs, ";")[[1]]
   assList <- list()
@@ -177,7 +177,7 @@ readingParser <- function(str, ref) {
                          Verses = NA)
   } else {
       chapters <- sapply(assList, "[[", "chapters")
-      verses <- sapply(assList, "[[", "verses")  
+      verses <- sapply(assList, "[[", "verses")
       vls <- sapply(verses, length)
       allChapters <- as.numeric(Reduce(c, lapply(seq_along(chapters), function(i) {
                                                             rep(chapters[i], each = vls[i])
@@ -317,7 +317,7 @@ for(ab in unique(OTLectRanges$Abbrv)) {
 dev.off()
 
 
-
+## Plot details for one book
 ab <- "Gen"
 rng <- which(OTref2Pos$Abbrv == ab)
 cs <- cumsum(OTref2$Verses[OTref2$Abbrv == ab]) # cumulative sum
@@ -338,4 +338,16 @@ gg <- ggplot(dat, aes(x = Pos)) +
   ylab("") +
   ## coord_polar(theta = "x") +
   ggtitle(ab)
+plot(gg)
+
+
+## Plot like a booksehlf
+dat <- OTLectRanges %>%
+  mutate(Chapters = as.factor(Chapters)) %>%
+  distinct()      # ignore how many times something appeared (read 2 or 3 times)
+gg <- ggplot(dat, aes(x = Pos)) +
+  geom_histogram(binwidth = 1, aes(fill = Abbrv), show.legend = FALSE) +
+  xlab("") +
+  ylab("") +
+  ggtitle("Bookshelf View")
 plot(gg)
