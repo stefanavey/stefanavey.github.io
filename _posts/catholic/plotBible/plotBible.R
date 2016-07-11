@@ -14,7 +14,8 @@ OTRefFile <- "OldTestamentReference.xlsx"
 abbrevFile <- "BibleAbbreviations.xlsx"
 LectSundaysFile <- "Lectionary-SundaysAndFeasts.xlsx"
 LectWeekdaysFile <- "Lectionary-Weekdays.xlsx"
-
+source("helperFunctions.R")
+       
 ########################
 ## Read in references ##
 ########################
@@ -93,102 +94,6 @@ dat <- OTLect %>%
   filter(grepl("^Gen ", Reading))       # Genesis
 data.frame(dat)
 
-## Functions to take readings and referece and return ranges that are covered
-
-assignChVerse <- function(str, ref, cvs, abbrv) {
-  colons <- gregexpr(":", cvs)[[1]]
-  if(length(colons) == 0) {
-    stop("Must have at least 1 colon")
-  } else if (length(colons) == 1) {
-      split2 <- strsplit(cvs, ":")
-      chapters <- split2[[1]][1]
-      vs <- strsplit(split2[[1]][-1], ",")
-      verses <- lapply(vs, function(v) {
-                         res <- c()
-                         for(i in seq_along(v)) {
-                           if(grepl("-", v[i])) {
-                             tmpSplit <- strsplit(v[i], "-")[[1]]
-                             res <- c(res, as.numeric(tmpSplit[1]):as.numeric(tmpSplit[2]))
-                           } else {
-                               res <- c(res, as.numeric(v[i]))
-                             }
-                         }
-                         return(res)
-                       })
-    } else if (length(colons) == 2) {
-        if(grepl(",", cvs)) {
-          warning("Not currently handling commas and 2 colons!")
-          return(list(chapters = NA, verses = NA))
-        }
-        split2 <- strsplit(cvs, "-", fixed=TRUE) # assumes that this is before any commas
-        split3 <- strsplit(split2[[1]], ":")
-        chapters <- sapply(split3, '[[', 1)
-        tmpVerses <- sapply(split3, '[[', 2)
-        numVerses <- filter(ref, Abbrv == abbrv,
-                            Chapter == as.numeric(chapters[1]))$Verses
-        verses <- list()
-        verses[[1]] <- as.numeric(tmpVerses[1]):numVerses
-        verses[[2]] <- 1:as.numeric(tmpVerses[2])
-      } else {
-          print(cvs)
-          stop("I didn't know it was possible to have more than 1 colon here!")
-        }
-  return(list(chapters = chapters, verses = verses))
-}
-
-##' @param str a character string specifying the reading in a format like
-##'            [bookAbbrv] [Chapter]:[Verse]-([Chapter]:)[Verse](,) ([Verse]-[Verse]) (;) ...
-##' @param ref a reference data frame specifying the number of chapters and verses in each book
-##' @details Assumes that the str only contains a single book abbrviation.
-##' @return a data frame that contains one row per verse and the following columns:
-##'         Abbrv: e.g. "Gen"
-##'         Chapter: Chapter number
-##'         Verse: A sinle verse
-readingParser <- function(str, ref) {
-  print(str)
-  ## split the string on whitespace
-  split1 <- strsplit(str, " ")[[1]]
-  ## Search for any 'or' and ignore second part for now
-  or <- grep("^or$", split1)
-  if(length(or) > 0) {
-    split1 <- split1[1:(or-1)]
-  }
-  ## Book abbreviation should always be the first element
-  if(!is.na(suppressWarnings(as.numeric(split1[1])))) {   # book number (e.g. "1 Sam")
-    aind <- 1:2
-  } else {
-      aind <- 1
-    }
-  abbrv <- paste(split1[aind], collapse = " ")
-  ## Get chapters and verses next
-  cvs <- paste(split1[-aind], collapse = "")
-  ## Remove any letters (like 12:1-4a should be 12:1-4)
-  cvs <- gsub("[a-z]", "", cvs)
-  cvs <- gsub("+", ",", cvs, fixed=TRUE)
-  ## If semicolon, then things get more complicated
-  chvs <- strsplit(cvs, ";")[[1]]
-  assList <- list()
-  for(i in seq_along(chvs)) {
-    assList[[i]] <- assignChVerse(str, ref, chvs[i], abbrv)
-  }
-  if(any(is.na(sapply(assList, "[[", "chapters")))) {
-    result <- data.frame(Abbrv = abbrv,
-                         Chapters = NA,
-                         Verses = NA)
-  } else {
-      chapters <- sapply(assList, "[[", "chapters")
-      verses <- sapply(assList, "[[", "verses")
-      vls <- sapply(verses, length)
-      allChapters <- as.numeric(Reduce(c, lapply(seq_along(chapters), function(i) {
-                                                            rep(chapters[i], each = vls[i])
-                                                          })))
-      allVerses <- Reduce(c, verses)
-      result <- data.frame(Abbrv = abbrv,
-                           Chapters = allChapters,
-                           Verses = allVerses)
-    }
-  return(result)
-}
 
 ############################################################
 ## Test out parser on all readings to see which ones fail ##
@@ -220,6 +125,21 @@ for(i in 1:nrow(OTLectRanges)) {
 
 OTLectRanges <- cbind(OTLectRanges, Pos = pos)
 
+
+## Add sections of the Old Testament (Torah, Wisdom, etc.) to OTLectRanges
+sections <- lapply(OTRefList, function(l) {
+                     books <- l[["Book.Name"]]
+                     abbrs <- abbrev$OT$Abbreviation[match(books, abbrev$OT$Name)]
+                     return(abbrs)
+                   })
+names(sections) <- OTsections
+## Workaround to match in list:
+## http://stackoverflow.com/questions/11002391/fast-way-of-getting-index-of-match-in-list
+ss <- rep(seq_along(sections), sapply(sections, length))
+OTLectRanges <- OTLectRanges %>%
+  mutate(Section = OTsections[ss[match(Abbrv, unlist(sections))]])
+  
+
 ##############################################################
 ## Test out some basic visualizations to find the right one ##
 ##############################################################
@@ -233,52 +153,6 @@ ggplot(fake, aes(x = Pos, fill = Chap)) +
   geom_histogram(binwidth = 1) +
   facet_grid(Book ~ .)
 
-
-
-## Multiple plot function
-## http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_%28ggplot2%29/
-##
-## ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-## - cols:   Number of columns in layout
-## - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-##
-## If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-## then plot 1 will go in the upper left, 2 will go in the upper right, and
-## 3 will go all the way across the bottom.
-##
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  library(grid)
-  ## Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  numPlots = length(plots)
-
-  ## If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-                                        # Make the panel
-                                        # ncol: Number of columns of plots
-                                        # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-
-  if (numPlots==1) {
-    print(plots[[1]])
-
-  } else {
-                                        # Set up the page
-      grid.newpage()
-      pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-
-                                        # Make each plot, in the correct location
-      for (i in 1:numPlots) {
-                                        # Get the i,j matrix positions of the regions that contain this subplot
-        matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-        print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                              layout.pos.col = matchidx$col))
-      }
-    }
-}
 
 
 
@@ -341,13 +215,60 @@ gg <- ggplot(dat, aes(x = Pos)) +
 plot(gg)
 
 
+                   
+
+## Calculate the position for each section
+sectPos <- sapply(OTsections, function(sect) {
+                    abbrvs <- sections[[sect]]
+                    lastAbbrv <- abbrvs[length(abbrvs)]
+                    poss <- OTref2Pos %>%
+                      filter(Abbrv == lastAbbrv) %>%
+                      select(Pos)
+                    maxPos <- max(poss)
+                    return(maxPos)
+                  })
+sectPos2 <- c(0, sectPos[-length(sectPos)])
+names(sectPos2) <- names(sectPos)
+sectLength <- sectPos - sectPos2
+
 ## Plot like a booksehlf
 dat <- OTLectRanges %>%
-  mutate(Chapters = as.factor(Chapters)) %>%
+  filter(!is.na(Pos)) %>%
+  select(Abbrv, Chapters, Verses, Pos, Section) %>%
+  mutate(Pos = (Pos - sectPos2[Section]) / sectLength[Section]) %>%
+  mutate(Section = factor(Section, levels = OTsections)) %>%
   distinct()      # ignore how many times something appeared (read 2 or 3 times)
+
+pdf("Barplot_days=Sundays_books=OT_format=bookshelf.pdf", height = 12, width = 8)
 gg <- ggplot(dat, aes(x = Pos)) +
-  geom_histogram(binwidth = 1, aes(fill = Abbrv), show.legend = FALSE) +
+  geom_bar(aes(fill = Abbrv), show.legend = FALSE) +
+  scale_x_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +
+  scale_y_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +  
+  ## scale_y_continuous(expand = c(0, 0)) +
+  facet_grid(Section ~ ., scales = "free") +
+  theme_bw() +
   xlab("") +
   ylab("") +
-  ggtitle("Bookshelf View")
+  ggtitle("How much of the Old Testament do you hear on Sundays?\n(Three Year Cycle)")
 plot(gg)
+dev.off()
+
+
+## What percent is it?
+dat %>%
+  distinct () %>%
+  group_by(Section) %>%
+  summarize(FractionCovered = n() / sectLength[Section[1]])
+
+## These percents are around 5-10%
+## This is not that surprising considering there are 27,568 verses in the
+## Old Testament and only 156 Sundays in 3 years
+nrow(OTref2Pos %>% filter(Book != "Psalms")) * 0.05 / 156
+
+## If we read the whole Old Testament in 3 years
+nrow(OTref2Pos %>% filter(Book != "Psalms"))  / 156
+
+vpc <- OTref2Pos %>%
+  filter(Book != "Psalms") %>%
+  group_by(Book, Chapter) %>%
+  summarize(VersesPerChapter = n())
