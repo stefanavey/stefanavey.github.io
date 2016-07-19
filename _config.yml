@@ -42,7 +42,7 @@ author :
   feedburner :
 production_url : http://stefanavey.github.io
 paginate: 3
-# baseurl:             "/sa"
+baseurl: ""             
 
 # Assets
 #
@@ -106,3 +106,7 @@ picture:
   #     num_posts: 5
   #     width: 580
   #     colorscheme: light
+
+## Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
+google_analytics: UA-52476983-2
+
