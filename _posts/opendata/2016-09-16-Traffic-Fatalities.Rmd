@@ -1,0 +1,10 @@
+---
+title: Traffic Fatalities
+published: false
+status: process
+layout: post
+category : r
+tags : [opendata, visualization]
+---
+* Traffic Fatalities Data
+[Recent call to action](https://www.whitehouse.gov/blog/2016/08/29/2015-traffic-fatalities-data-has-just-been-released-call-action-download-and-analyze)
