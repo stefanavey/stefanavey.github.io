@@ -5,7 +5,6 @@ category : lessons
 tagline: How to get up and running
 tags : [blog, jekyll, github]
 ---
-{% include JB/setup %}
 
 ## Creating a Blog
 I was recently inspired by my friend to create a blog.  After thinking, "I'll get around to that when I have time" for many months I decided to just go for it.

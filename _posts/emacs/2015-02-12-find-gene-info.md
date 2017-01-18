@@ -1,11 +1,16 @@
 ---
-title: Gene Summaries Inside Emacs
 layout: post
-category : lessons
-tagline: Get gene info without leaving home row
-tags : [emacs, bioinformatics, tutorial]
+title: "Gene Summaries Inside Emacs"
+subtitle: "Get gene info without leaving home row"
+category: lessons
+tags: [emacs, bioinformatics, tutorial]
+date: 2015-02-12 05:00:00 -0500
+<!-- permalink: /blog/gene-summaries-in-emacs/ -->
+layout: post
+comments: true
+show-share: true
+show-subscribe: true
 ---
-{% include JB/setup %}
 
 ## The Problem
 As a bioinformatician who works mostly inside of Emacs, I **strongly dislike** having to open a web browser, type in a gene identifier and search for information on that gene just to view a simple summary of what a gene does.  Instead, I'd rather be able to see that right inside of my text editor, _fast_.  Since Emacs is so customizable, I decided to try to see if I could get find a solution by hacking out some `elisp`, `bash scripting` and `R`.
@@ -134,7 +139,7 @@ Well this is great if you see entrez gene IDs but what about other gene identifi
 
 {% highlight bash %}
 
-#$ -S /bin/sh                                                                                          
+#$ -S /bin/sh
 
 ## Get all .html files that start with only numbers and create symbolic links to the appropriate html file
 
@@ -145,7 +150,7 @@ do
     geneSymbol=`grep "Official Symbol:" $f | cut -d' ' -f3`
     newFile=$geneSymbol".html"
     if [ ! -z "$geneSymbol" ]; then
-        ln -s $f $newFile               # create symbolic link                                         
+        ln -s $f $newFile               # create symbolic link
     fi
 done
 

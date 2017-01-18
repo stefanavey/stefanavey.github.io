@@ -6,7 +6,6 @@ layout: post
 category: r
 tags : [R, shiny, bioinformatics]
 ---
-{% include JB/setup %}
 
 # Background
 
@@ -21,10 +20,10 @@ The new implementation organizes the individual apps in a dashboard instead of a
 Take a look at the [dashboard app](https://sparsedata.shinyapps.io/SparseData-Cluster) and [source code](https://github.com/sparsedata/cluster-analysis) and leave a comment to let me know what you think! You can download a sample data set ([mtcars](https://internal.shinyapps.io/gallery/066-upload-file/mtcars.csv)) to try out if you don't have your own.
 
 ## Previous Implementation
-<img src="/images/StefanAvey-ClusterAnalysis-Screenshot.png" alt="Screenshot of previous implementation" style="width: 1000px;"/>
+<img src="/img/StefanAvey-ClusterAnalysis-Screenshot.png" alt="Screenshot of previous implementation" style="width: 1000px;"/>
 
 ## Dashboard Implementation
-<img src="/images/SparseData-ClusterAnalysis-Screenshot.png" alt="Screenshot of dashboard implementation" style="width: 1000px;"/>
+<img src="/img/SparseData-ClusterAnalysis-Screenshot.png" alt="Screenshot of dashboard implementation" style="width: 1000px;"/>
 
 
 

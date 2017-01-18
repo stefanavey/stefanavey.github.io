@@ -1,15 +1,18 @@
-# Temporary Files
+# temporary Files
 *~
 *\#
 
-_site/*
-_theme_packages/*
+# project
+_site
+.sass-cache
+.vagrant
 
+# general
 Thumbs.db
 .DS_Store
+ehthumbs.db
 
 !.gitkeep
 
 .rbenv-version
 .rvmrc
-
