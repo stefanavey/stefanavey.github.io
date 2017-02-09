@@ -4,9 +4,12 @@ title: About me
 subtitle:
 ---
 
-I am in my 5th (and final) year of a PhD in the Interdepartmental Program in Computational Biology and Bioinformatics at Yale. I work on mining biological data to understand the immune response to influenza infection and vaccination. My research focuses on developing methods and tools to facilitate the discovery of predictive immune signatures.
 
-More generally, I am excited by challenges in data science and visualization as well as teaching and learning.
+I was born in Ontario, Canada and raised in Southwest Florida.  I attended undergrad at _Florida State University (FSU)_ where I started in Biology and moved to the more mathematical and computational side of Biology called [bioinformatics](https://en.wikipedia.org/wiki/Bioinformatics). I also met my lovely wife Claire while studying at FSU and we reside in Connecticut with our daughter.
+
+I am wrapping up my PhD in the [Interdepartmental Program in Computational Biology and Bioinformatics](http://cbb.yale.edu/) at Yale. My work focuses on mining biological data to understand the immune response to influenza infection and vaccination. I develop and apply machine learning methods and software to facilitate the discovery of predictive immune signatures.
+
+My background in biomedical knowledge and computational methods combined with my scientific training has prepared me for a position as a bioinformatics scientist or data scientist.  **I am on the job market now and would love to talk**.
 
 
 # Contact
@@ -15,6 +18,7 @@ More generally, I am excited by challenges in data science and visualization as 
 <!-- I will be away until ?? with limited email access. -->
 <!-- </div> -->
 
+<!-- E-MAIL ME FORM -->
 <form action="https://formspree.io/avey.stefan@gmail.com" method="POST" class="form" id="contact-form">
   <p>You can send me a quick message using the form below:</p>
   <div class="row">

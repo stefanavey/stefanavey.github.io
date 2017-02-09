@@ -24,7 +24,9 @@ description: Stefan Avey's Website
 # List of links in the navigation bar
 navbar-links:
   Blog: ""
+  Projects: "projects"  
   About Me: "aboutme"
+  Publications: "https://scholar.google.com/citations?user=Ky5aorIAAAAJ"
   Links:
     - R Bloggers: "http://www.r-bloggers.com"
     - Rstudio (Learn R): "https://www.rstudio.com/online-learning/"
