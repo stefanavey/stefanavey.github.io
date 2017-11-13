@@ -5,12 +5,11 @@ subtitle:
 ---
 
 
-I was born in Ontario, Canada and raised in Southwest Florida.  I attended undergrad at _Florida State University (FSU)_ where I started in Biology and moved to the more mathematical and computational side of Biology called [bioinformatics](https://en.wikipedia.org/wiki/Bioinformatics). I also met my lovely wife Claire while studying at FSU and we reside in Connecticut with our daughter.
+I was born in Ontario, Canada and raised in Southwest Florida.  I attended undergrad at _The Florida State University (FSU)_ where I started in Biology and moved to the more mathematical and computational side of Biology called [bioinformatics](https://en.wikipedia.org/wiki/Bioinformatics). I also met my lovely wife while studying at FSU.
 
-I am wrapping up my PhD in the [Interdepartmental Program in Computational Biology and Bioinformatics](http://cbb.yale.edu/) at Yale. My work focuses on mining biological data to understand the immune response to influenza infection and vaccination. I develop and apply machine learning methods and software to facilitate the discovery of predictive immune signatures.
+I completed my PhD in the [Interdepartmental Program in Computational Biology and Bioinformatics](http://cbb.yale.edu/) at Yale University. My research focused on mining biological data to understand the immune response to influenza infection and vaccination. I developed and applied machine learning methods and software to facilitate the discovery of predictive immune signatures.
 
-My background in biomedical knowledge and computational methods combined with my scientific training has prepared me for a position as a bioinformatics scientist or data scientist.  **I am on the job market now and would love to talk**.
-
+My background in biomedical knowledge and computational methods combined with my scientific training has led me to recently join the quantitative sciences group at [Janssen Pharmaceuticals Company of Johnson and Johnson](http://www.janssen.com/).
 
 # Contact
 
