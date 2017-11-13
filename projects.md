@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Projects
-subtitle: Exciting things I've done while also getting a PhD
+subtitle: Exciting side projects I've worked on
 ---
 
 # Data Science
