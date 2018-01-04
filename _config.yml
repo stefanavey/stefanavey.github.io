@@ -48,7 +48,7 @@ author:
   # email: "youremail@domain.com"
   # facebook: savey1
   github: stefanavey
-  # twitter: yourname   # eg. daattali
+  twitter: stefan_avey
   # reddit: yourname    # eg. daattali
   # google-plus: +StefanAvey1   # eg. +DeanAttali or 109424658772469020925
   linkedin: stefanavey  # eg. daattali
@@ -65,7 +65,7 @@ footer-links-active:
   rss: false
   facebook: false
   email: false
-  twitter: false
+  twitter: true
   google-plus: false
   github: true
   reddit: false
