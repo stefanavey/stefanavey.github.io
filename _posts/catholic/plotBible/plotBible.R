@@ -9,6 +9,7 @@ library(readxl)
 ## library(openxlsx)                       # for reading excel tables
 library(tidyverse)
 library(stringr)                        # string functions
+library(aveytoolkit)
 OTRefFile <- "OldTestamentReference.xlsx"
 abbrevFile <- "BibleAbbreviations.xlsx"
 LectSundaysFile <- "Lectionary-SundaysAndFeasts.xlsx"
@@ -70,21 +71,21 @@ OTLect %>%
   filter(YearA)                         # only readings from Year A
 
 
-############################################
-## Try out some plotting on a limited set ##
-############################################
-## Lost previous function to do parsing. Write a new function to parse readings
-## into a data frame of book, chapter, verse
-
+#################################################################################
+## Parsing Functions                                                           ##
+#################################################################################
+## Lost previous function to do parsing. Write new functions to parse readings
+## into a data frame of book, chapter, verse. These are NOT efficient but get
+## the job done for most references.
 
 ##' ParseBasic
 ##' 
-##' Parse a basic reference in the form <Chapter>:<VerseStart>[-<VerseEnd>]
-##' where the ending verse is optional
+##' Parse a basic reference 
 ##' 
-##' @param str
-##' @return a character vector containing the starting Chapter:Verse and ending
-##'     Chapter:Verse
+##' @param str a character string in the form
+##'     <Chapter>:<VerseStart>[-<VerseEnd>] where the ending verse is optional
+##' @return a data frame with 1 row and 2 columns containing the starting and
+##'     ending Chapter:Verse
 ParseBasic <- function(str) {
     ## Simple case, no commas or semicolons
     result <- data.frame(start = NA, end = NA)
@@ -98,10 +99,14 @@ ParseBasic <- function(str) {
 
 ##' ParseFull
 ##'
-##' Parse references to chapters and verse 
+##' Parse a full reference
 ##' 
-##' @param str 
-##' @return 
+##' @param str a character string in the form <BookAbbrev>
+##'     <Chapter>:<VerseStart>[-<VerseEnd>] [, <VerseStart>-<VerseEnd>] [;
+##'     <Chapter>:<VerseStart>[-<VerseEnd>]]
+##' @return a data frame with as many rows as there are continuous verses in the
+##'     reference and 3 columns containing the starting and ending Chapter:Verse
+##'     as well as the book abbreviation
 ParseFull <- function(str) {
     abbrv <- str_extract(str, "^[1-9]?[ ]?[A-Za-z]+ ")[[1]] %>%
         trimws()
@@ -139,8 +144,8 @@ ParseFull <- function(str) {
 }
 
 
-## Test out the parser on all 
-tmp <- OTLect2 %>%
+## Test out the parser on the full Old Testament Lectionary for Sundays 
+tmp <- OTLect %>%
     mutate(Pos = map(Reading_clean, function(x) {
         ## cat(x, sep = '\n') # debugging
         ParseFull(x) %>%
@@ -150,15 +155,16 @@ tmp <- OTLect2 %>%
         do(data.frame(Pos = ifelse(any(is.na(.)), NA, .$Pos.x:.$Pos.y))) %>%
             pull(Pos)}))
 
-pos_count <- tmp %>%
+comb_dat <- tmp %>%
     unnest(Pos) %>%
-    count(Pos)
+    left_join(OTref2Pos, by = "Pos")
 
-    
-plot_dat <- OTref2Pos %>%
-    left_join(pos_count, by = "Pos") %>%
-    filter(!is.na(n)) %>%
-    arrange(-n)
+## These are all the parsing failures that could be cleaned up by fixing the
+## readings or occur when readings don't map onto the reference (e.g. ending
+## verse is not in the reference).
+comb_dat %>%
+    filter(is.na(Pos)) %>%
+    pull(Reading_clean)
 
 
 ## ############################################################
@@ -192,20 +198,6 @@ plot_dat <- OTref2Pos %>%
 ## OTLectRanges <- cbind(OTLectRanges, Pos = pos)
 
 
-## Add sections of the Old Testament (Torah, Wisdom, etc.) to OTLectRanges
-sections <- lapply(OTRefList, function(l) {
-                     books <- l[["Book Name"]]
-                     abbrs <- abbrev$OT$Abbreviation[match(books, abbrev$OT$Name)]
-                     return(abbrs)
-                   })
-names(sections) <- OTsections
-## Workaround to match in list:
-## http://stackoverflow.com/questions/11002391/fast-way-of-getting-index-of-match-in-list
-ss <- rep(seq_along(sections), sapply(sections, length))
-OTLectRanges <- OTLectRanges %>%
-  mutate(Section = OTsections[ss[match(Abbrv, unlist(sections))]])
-  
-
 ##############################################################
 ## Test out some basic visualizations to find the right one ##
 ##############################################################
@@ -220,68 +212,68 @@ ggplot(fake, aes(x = Pos, fill = Chap)) +
   facet_grid(Book ~ .)
 
 
-
-
 ## Real Data
+plot_dat <- comb_dat
 fname <- "Barplot_days=Sundays_books=OT.pdf"
-pdf(fname, width = 6, height = 12)
-for(ab in unique(OTLectRanges$Abbrv)) {
-  yearCols <- c("YearA", "YearB", "YearC")
-  ggList <- list()
-  for(year in yearCols) {
+## pdf(fname, width = 6, height = 12)
+for(ab in unique(plot_dat$Abbrv)) {
+    yearCols <- c("YearA", "YearB", "YearC")
+    ggList <- list()
     rng <- which(OTref2Pos$Abbrv == ab)
     cs <- cumsum(OTref2$Verses[OTref2$Abbrv == ab]) # cumulative sum
     chapStarts <- c(1, cs[-length(cs)] + 1)
     posStart <- min(OTref2Pos$Pos[OTref2Pos$Abbrv == ab])
     breaks <- chapStarts + posStart
     labels <- as.character(1:length(breaks))
-    dat <- OTLectRanges %>% filter(Abbrv == ab) %>%
-      filter_(year) %>%
-      mutate(Chapters = as.factor(Chapters)) %>%
-      select(Abbrv, Chapters, Verses, Pos) %>%
-      distinct()      # ignore how many times something appeared (read 2 or 3 times)
-    ggList[[year]] <- ggplot(dat, aes(x = Pos)) +
-      geom_histogram(binwidth = 1, aes(fill = Chapters),
-                     color = "black", fill = "black", show.legend = FALSE) +
-      coord_flip() +
-      scale_x_continuous(limits = c(min(rng), max(rng)), breaks = breaks,
-                         labels = labels) +
-      scale_y_continuous(breaks = NULL) +
-      xlab("Chapter") +
-      ylab(year) +
-      ## coord_polar(theta = "x") +
-      ggtitle(ab)
-  }
-  multiplot(plotlist = ggList, cols = 3)
+    for(year in yearCols) {
+        dat <- plot_dat %>%
+            filter(Abbrv == ab) %>%
+            filter(!!sym(year)) %>%
+            mutate(Chapter = as.factor(Chapter)) %>%
+            select(Abbrv, Chapter, Verses, Pos) %>%
+            distinct()      # ignore how many times something appeared (read 2 or 3 times)
+        ggList[[year]] <- ggplot(dat, aes(x = Pos)) +
+            geom_histogram(binwidth = 1, aes(fill = Chapters),
+                           color = "black", fill = "black", show.legend = FALSE) +
+            coord_flip() +
+            scale_x_continuous(limits = c(min(rng), max(rng)), breaks = breaks,
+                               labels = labels) +
+            scale_y_continuous(breaks = NULL) +
+            xlab("Chapter") +
+            ylab(year) +
+            ## coord_polar(theta = "x") +
+            ggtitle(ab) +
+            getBaseTheme()
+    }
+    Multiplot(plotlist = ggList, cols = 3)
 }
-dev.off()
+## dev.off()
 
 
-## Plot details for one book
-ab <- "Gen"
+## Plot details for one book including times read
+ab <- "Ps"
 rng <- which(OTref2Pos$Abbrv == ab)
 cs <- cumsum(OTref2$Verses[OTref2$Abbrv == ab]) # cumulative sum
 chapStarts <- c(1, cs[-length(cs)] + 1)
 posStart <- min(OTref2Pos$Pos[OTref2Pos$Abbrv == ab])
 breaks <- chapStarts + posStart
 labels <- as.character(1:length(breaks))
-dat <- OTLectRanges %>% filter(Abbrv == ab) %>%
-  mutate(Chapters = as.factor(Chapters)) %>%
-  distinct()      # ignore how many times something appeared (read 2 or 3 times)
+dat <- plot_dat %>%
+    select(Abbrv, Chapter, Verse, Pos) %>%
+    filter(Abbrv == ab) %>%
+    mutate(Chapter = as.factor(Chapter))
 gg <- ggplot(dat, aes(x = Pos)) +
-  geom_histogram(binwidth = 1, aes(fill = Chapters), show.legend = FALSE) +
-  coord_flip() +
-  scale_x_continuous(limits = c(min(rng), max(rng)), breaks = breaks,
-                     labels = labels) +
-  scale_y_continuous(breaks = NULL) +
-  xlab("Chapter") +
-  ylab("") +
-  ## coord_polar(theta = "x") +
-  ggtitle(ab)
+    geom_histogram(binwidth = 1, aes(fill = Chapter), show.legend = FALSE) +
+    coord_flip() +
+    scale_x_continuous(limits = c(min(rng), max(rng)), breaks = breaks,
+                       labels = labels) +
+    xlab("Chapter") +
+    ylab("Times Read") +
+    ## coord_polar(theta = "x") +
+    ggtitle(ab) +
+    getBaseTheme()
 plot(gg)
 
-
-                   
 
 ## Calculate the position for each section
 sectPos <- sapply(OTsections, function(sect) {
@@ -298,26 +290,30 @@ names(sectPos2) <- names(sectPos)
 sectLength <- sectPos - sectPos2
 
 ## Plot like a booksehlf
-dat <- OTLectRanges %>%
-  filter(!is.na(Pos)) %>%
-  select(Abbrv, Chapters, Verses, Pos, Section) %>%
-  mutate(Pos = (Pos - sectPos2[Section]) / sectLength[Section]) %>%
-  mutate(Section = factor(Section, levels = OTsections)) %>%
-  distinct()      # ignore how many times something appeared (read 2 or 3 times)
+dat <- plot_dat %>%
+    filter(!is.na(Pos)) %>%
+    select(Section, Abbrv, Chapter, Verse, Pos) %>%
+    mutate(Pos = (Pos - sectPos2[Section]) / sectLength[Section]) %>%
+    mutate(Section = factor(Section, levels = OTsections)) %>%
+    mutate(Label = paste0(Abbrv, " ", Chapter, ":", Verse)) %>%
+    distinct()      # ignore how many times something appeared (read 2 or 3 times)
 
-pdf("Barplot_days=Sundays_books=OT_format=bookshelf.pdf", height = 12, width = 8)
+## pdf("Barplot_days=Sundays_books=OT_format=bookshelf.pdf", height = 12, width = 8)
 gg <- ggplot(dat, aes(x = Pos)) +
-  geom_bar(aes(fill = Abbrv), show.legend = FALSE) +
-  scale_x_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +
-  scale_y_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +  
-  ## scale_y_continuous(expand = c(0, 0)) +
-  facet_grid(Section ~ ., scales = "free") +
-  theme_bw() +
-  xlab("") +
-  ylab("") +
-  ggtitle("How much of the Old Testament do you hear on Sundays?\n(Three Year Cycle)")
+    geom_vline(aes(xintercept = Pos, color = Abbrv), show.legend = FALSE) +
+    scale_x_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +
+    scale_y_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +  
+    ## scale_y_continuous(expand = c(0, 0)) +
+    facet_grid(Section ~ ., scales = "fixed") +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    ggtitle(paste("How much of the Old Testament do you hear on Sundays?",
+                  "(Three Year Cycle)", sep = '\n')) +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 10, face = "bold"))
 plot(gg)
-dev.off()
+## dev.off()
 
 
 ## What percent is it?
@@ -335,6 +331,7 @@ nrow(OTref2Pos %>% filter(Book != "Psalms")) * 0.05 / 156
 nrow(OTref2Pos %>% filter(Book != "Psalms"))  / 156
 
 vpc <- OTref2Pos %>%
-  filter(Book != "Psalms") %>%
-  group_by(Book, Chapter) %>%
-  summarize(VersesPerChapter = n())
+    filter(Book != "Psalms") %>%
+    group_by(Book, Chapter) %>%
+    summarize(VersesPerChapter = n()) %>%
+    ungroup()
