@@ -5,10 +5,9 @@
 #############################
 ## Load necessary packages ##
 #############################
-library(openxlsx)                       # for reading excel tables
-library(tidyr)
-library(dplyr)
-library(ggplot2)
+library(readxl)
+## library(openxlsx)                       # for reading excel tables
+library(tidyverse)
 library(stringr)                        # string functions
 OTRefFile <- "OldTestamentReference.xlsx"
 abbrevFile <- "BibleAbbreviations.xlsx"
@@ -20,65 +19,50 @@ source("helperFunctions.R")
 ## Read in references ##
 ########################
 testaments <- c("OT", "NT")
-abbrev <- lapply(testaments, function(te) read.xlsx(abbrevFile, sheet = te))
+abbrev <- map(testaments, ~read_excel(abbrevFile, sheet = .x))
 names(abbrev) <- testaments
 
 OTsections <- c("Torah", "Historical", "Wisdom", "MajorProphets", "MinorProphets")
-OTRefList <- lapply(OTsections, function(i) read.xlsx(OTRefFile, sheet=i))
+OTref <- map_df(OTsections, function(OTsection) {
+    read_excel(OTRefFile, sheet = OTsection, na = ".") %>%
+        mutate(Section = OTsection)
+}) %>%
+    rename(Book = `Book Name`) %>%
+    gather(matches("[0-9]+"), key = "Chapter", value = "Verses") %>%
+    filter(!is.na(Verses)) %>%
+    select(Section, Book, Chapter, Verses) %>%
+    mutate(Book = factor(Book,            # Order books in factor levels
+                         levels = abbrev$OT$Name),
+           Abbrv = abbrev$OT$Abbreviation[match(Book, abbrev$OT$Name)],
+           Chapter = as.numeric(Chapter))
 
-tmp <- lapply(OTRefList, function(ref) {
-                   res <- apply(ref, 1, function(row) {
-                                       book <- row[["Book.Name"]]
-                                       nChap <- row[["#.Ch."]]
-                                       verses <- rep(NA, nChap)
-                                       for(chap in 1:nChap) {
-                                         verses[chap] <- as.numeric(row[[as.character(chap)]])
-                                       }
-                                       data.frame(Book = book,
-                                                  Chapter = 1:nChap,
-                                                  Verses = verses)
-                                     })
-                   Reduce(rbind, res)
-                 })
-OTref <- Reduce(rbind, tmp)
-
-OTref2 <- OTref %>%
-  tbl_df() %>%                          # change class for convenience
-  mutate(Book = factor(Book,      # Order books in factor levels
-             levels = abbrev$OT$Name),
-         Abbrv = abbrev$OT$Abbreviation[match(Book, abbrev$OT$Name)])
-OTref2
-
-nr <- sum(OTref2$Verses)
-cnames <- c(gsub("Verses", "Verse", colnames(OTref2)), "Pos")
-lcv <- 1
-OTref2Pos <- list()
-for(i in 1:nrow(OTref2)) {
-  nv <- OTref2$Verses[i]
-  inds <- lcv:(lcv+nv-1)
-  OTref2Pos[[i]] <- data.frame(Book = as.character(OTref2$Book[i]),
-                              Chapter = OTref2$Chapter[i],
-                              Verse = 1:OTref2$Verses[i],
-                              Abbrv = as.character(OTref2$Abbrv[i]),
-                              Pos = inds)
-  lcv <- lcv + nv
-}
-OTref2Pos <- Reduce(rbind, OTref2Pos)
-
+## Munge so that reference contains 1 row for every verse in the order they
+## appear in the Old Testament with a `Pos` column to denote the position of the
+## verse.
+OTref2Pos <- OTref %>%
+    arrange(Book, Chapter) %>%
+    mutate(Verse = map(Verses, function(x) 1:x)) %>%
+    unnest() %>%
+    mutate(Chapter_Verse = paste(Chapter, Verse, sep = ':')) %>%
+    mutate(Pos = 1:n())
 
 ###################################################
 ## Read in the Lectionary for Sundays and Feasts ##
 ###################################################
 readings <- c("OT", "Psalm", "NT", "Gospel")
-LectSundays <- lapply(readings, function(i) read.xlsx(LectSundaysFile, sheet=i))
+LectSundays <- map(readings, ~read_excel(LectSundaysFile, sheet = .x))
 names(LectSundays) <- readings
 
-OTLect <- rbind(LectSundays$OT, LectSundays$Psalm) %>%
-  tbl_df() %>%
-  separate(LectNum_Year, c("LectNum", "Year"), sep = '-') %>%
-  mutate(YearA = grepl("A", Year),
-         YearB = grepl("B", Year),
-         YearC = grepl("C", Year))
+## For now, will ignore shorter form readings (which seem to be the 2nd option)
+## by ignoring parts of the readings after "or"
+OTLect <- bind_rows(LectSundays$OT, LectSundays$Psalm) %>%
+    tbl_df() %>%
+    separate(LectNum_Year, c("LectNum", "Year"), sep = '-') %>%
+    mutate(YearA = grepl("A", Year),
+           YearB = grepl("B", Year),
+           YearC = grepl("C", Year)) %>%
+    mutate(Reading_clean = str_split(Reading, pattern = " or ") %>%
+               map_chr(1))
 OTLect
 
 ## Can easily now filter by new indicator columns
@@ -89,46 +73,128 @@ OTLect %>%
 ############################################
 ## Try out some plotting on a limited set ##
 ############################################
-dat <- OTLect %>%
-  filter(YearA) %>%                     # Year A only
-  filter(grepl("^Gen ", Reading))       # Genesis
-data.frame(dat)
+## Lost previous function to do parsing. Write a new function to parse readings
+## into a data frame of book, chapter, verse
 
 
-############################################################
-## Test out parser on all readings to see which ones fail ##
-############################################################
-tmp <- lapply(OTLect$Reading, readingParser, ref = OTref2)
-tmp <- lapply(seq_along(tmp), function(i) {
-                         cbind(OTLect[i,], tmp[[i]])
-              })
-OTLectRanges <- Reduce(rbind, na.omit(tmp))
-
-## Now need to assign "Pos" to reference and then add
-## a counter for plotting that counts how many times each
-## row is in the reference and plot the 'reference'
-
-pos <- rep(NA, nrow(OTLectRanges))
-for(i in 1:nrow(OTLectRanges)) {
-  index <- which(as.character(OTref2Pos$Abbrv) == OTLectRanges$Abbrv[i] &
-                    OTref2Pos$Chapter == OTLectRanges$Chapter[i] &
-                    OTref2Pos$Verse == OTLectRanges$Verses[i])
-  if(length(index) == 0) {
-    print(i)
-    show(OTLectRanges[i,])
-    warning("no position set")
-  } else {
-      pos[i] <- index
+##' ParseBasic
+##' 
+##' Parse a basic reference in the form <Chapter>:<VerseStart>[-<VerseEnd>]
+##' where the ending verse is optional
+##' 
+##' @param str
+##' @return a character vector containing the starting Chapter:Verse and ending
+##'     Chapter:Verse
+ParseBasic <- function(str) {
+    ## Simple case, no commas or semicolons
+    result <- data.frame(start = NA, end = NA)
+    result[1, ] <- str_split(str, "-")[[1]]
+    if (!str_detect(result[1, 2], ":")) {
+        ch <- str_split(result[1, 1], ":")[[1]][1]
+        result[1, 2] <- paste(ch, result[1, 2], sep = ":")
     }
+    return(result)
 }
-## Some errors here. Some are due to my bad parsing and some are ambiguous while some may not exist!
 
-OTLectRanges <- cbind(OTLectRanges, Pos = pos)
+##' ParseFull
+##'
+##' Parse references to chapters and verse 
+##' 
+##' @param str 
+##' @return 
+ParseFull <- function(str) {
+    abbrv <- str_extract(str, "^[1-9]?[ ]?[A-Za-z]+ ")[[1]] %>%
+        trimws()
+    str <- str_replace(str, "^[1-9]?[ ]?[A-Za-z]+ ", "") %>%
+        str_replace_all("[a-z]", "") %>%               
+        trimws()
+    num <- str_count(str, "[;,]") + 1
+    result <- data.frame(start = rep(NA, num), end = rep(NA, num))
+    str_mult <- str_split(str, ";")[[1]] %>%
+        trimws
+    lcv <- 1
+    for (rr in str_mult) {
+        if (!str_detect(rr, "[,]")) {
+            ## Basic parsing if there are no commas
+            result[lcv,] <- ParseBasic(rr)
+            lcv <- lcv + 1
+        } else {
+            ## Handle commas
+            x <- str_split(rr, ",")[[1]] %>%
+                trimws()
+            ## Loop over x to assign chapter, if not present, and parse basic
+            for (jj in seq_along(x)) {
+                latest_ch <- map(str_split(x, ":"), function(str)
+                    str_extract(str[length(str)-1], "[0-9]+$"))
+                if (!str_detect(x[[jj]], ":")) {
+                    x[[jj]] <- paste(latest_ch[[jj-1]], x[[jj]], sep = ":")
+                }
+                result[lcv, ] <- ParseBasic(x[[jj]])
+                lcv <- lcv + 1
+            }
+        }
+    }
+    result[["Abbrv"]] <- abbrv
+    return(result)
+}
+
+
+## Test out the parser on all 
+tmp <- OTLect2 %>%
+    mutate(Pos = map(Reading_clean, function(x) {
+        ## cat(x, sep = '\n') # debugging
+        ParseFull(x) %>%
+        left_join(OTref2Pos, by = c(start = "Chapter_Verse", Abbrv = "Abbrv")) %>%
+        left_join(OTref2Pos, by = c(end = "Chapter_Verse", Abbrv = "Abbrv")) %>%
+        rowwise() %>%
+        do(data.frame(Pos = ifelse(any(is.na(.)), NA, .$Pos.x:.$Pos.y))) %>%
+            pull(Pos)}))
+
+pos_count <- tmp %>%
+    unnest(Pos) %>%
+    count(Pos)
+
+    
+plot_dat <- OTref2Pos %>%
+    left_join(pos_count, by = "Pos") %>%
+    filter(!is.na(n)) %>%
+    arrange(-n)
+
+
+## ############################################################
+## ## Test out parser on all readings to see which ones fail ##
+## ############################################################
+## tmp <- lapply(OTLect$Reading, readingParser, ref = OTref2)
+## tmp <- lapply(seq_along(tmp), function(i) {
+##                          cbind(OTLect[i,], tmp[[i]])
+##               })
+## OTLectRanges <- Reduce(rbind, na.omit(tmp))
+
+## ## Now need to assign "Pos" to reference and then add
+## ## a counter for plotting that counts how many times each
+## ## row is in the reference and plot the 'reference'
+
+## pos <- rep(NA, nrow(OTLectRanges))
+## for(i in 1:nrow(OTLectRanges)) {
+##   index <- which(as.character(OTref2Pos$Abbrv) == OTLectRanges$Abbrv[i] &
+##                     OTref2Pos$Chapter == OTLectRanges$Chapter[i] &
+##                     OTref2Pos$Verse == OTLectRanges$Verses[i])
+##   if(length(index) == 0) {
+##     print(i)
+##     show(OTLectRanges[i,])
+##     warning("no position set")
+##   } else {
+##       pos[i] <- index
+##     }
+## }
+## ## Some errors here. Some are due to my bad parsing and some are ambiguous while some may not exist!
+
+## OTLectRanges <- cbind(OTLectRanges, Pos = pos)
 
 
 ## Add sections of the Old Testament (Torah, Wisdom, etc.) to OTLectRanges
 sections <- lapply(OTRefList, function(l) {
-                     books <- l[["Book.Name"]]
+                     books <- l[["Book Name"]]
                      abbrs <- abbrev$OT$Abbreviation[match(books, abbrev$OT$Name)]
                      return(abbrs)
                    })
