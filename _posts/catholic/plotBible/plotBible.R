@@ -6,7 +6,7 @@
 ## Load necessary packages ##
 #############################
 library(readxl)
-## library(openxlsx)                       # for reading excel tables
+library(scales)
 library(tidyverse)
 library(stringr)                        # string functions
 library(aveytoolkit)
@@ -152,7 +152,12 @@ tmp <- OTLect %>%
         left_join(OTref2Pos, by = c(start = "Chapter_Verse", Abbrv = "Abbrv")) %>%
         left_join(OTref2Pos, by = c(end = "Chapter_Verse", Abbrv = "Abbrv")) %>%
         rowwise() %>%
-        do(data.frame(Pos = ifelse(any(is.na(.)), NA, .$Pos.x:.$Pos.y))) %>%
+            do(data.frame(Pos = if (any(is.na(.))) {
+                                    NA
+                                } else {
+                                    .$Pos.x:.$Pos.y
+                                }
+                          )) %>%
             pull(Pos)}))
 
 comb_dat <- tmp %>%
@@ -215,7 +220,7 @@ ggplot(fake, aes(x = Pos, fill = Chap)) +
 ## Real Data
 plot_dat <- comb_dat
 fname <- "Barplot_days=Sundays_books=OT.pdf"
-## pdf(fname, width = 6, height = 12)
+pdf(fname, width = 6, height = 12)
 for(ab in unique(plot_dat$Abbrv)) {
     yearCols <- c("YearA", "YearB", "YearC")
     ggList <- list()
@@ -247,11 +252,11 @@ for(ab in unique(plot_dat$Abbrv)) {
     }
     Multiplot(plotlist = ggList, cols = 3)
 }
-## dev.off()
+dev.off()
 
 
 ## Plot details for one book including times read
-ab <- "Ps"
+ab <- "Gen"
 rng <- which(OTref2Pos$Abbrv == ab)
 cs <- cumsum(OTref2$Verses[OTref2$Abbrv == ab]) # cumulative sum
 chapStarts <- c(1, cs[-length(cs)] + 1)
@@ -298,7 +303,7 @@ dat <- plot_dat %>%
     mutate(Label = paste0(Abbrv, " ", Chapter, ":", Verse)) %>%
     distinct()      # ignore how many times something appeared (read 2 or 3 times)
 
-## pdf("Barplot_days=Sundays_books=OT_format=bookshelf.pdf", height = 12, width = 8)
+pdf("Barplot_days=Sundays_books=OT_format=bookshelf.pdf", height = 12, width = 8)
 gg <- ggplot(dat, aes(x = Pos)) +
     geom_vline(aes(xintercept = Pos, color = Abbrv), show.legend = FALSE) +
     scale_x_continuous(labels = NULL, breaks = NULL, expand = c(0, 0)) +
@@ -313,25 +318,24 @@ gg <- ggplot(dat, aes(x = Pos)) +
     getBaseTheme() +
     theme(strip.text = element_text(size = 10, face = "bold"))
 plot(gg)
-## dev.off()
+dev.off()
 
 
 ## What percent is it?
 dat %>%
   distinct () %>%
   group_by(Section) %>%
-  summarize(FractionCovered = n() / sectLength[Section[1]])
+  summarize(PercentCovered = percent(n() / sectLength[Section[1]]))
 
 ## These percents are around 5-10%
 ## This is not that surprising considering there are 27,568 verses in the
 ## Old Testament and only 156 Sundays in 3 years
+
+## This would come out to about 8 verses on average. This can be done more
+## rigorously by directly looking at the lectionary to determine number of
+## verses in reading.
 nrow(OTref2Pos %>% filter(Book != "Psalms")) * 0.05 / 156
 
-## If we read the whole Old Testament in 3 years
+## If we read the whole Old Testament in 3 years, we would need to hear 160
+## verses from the Old Testament every Sunday!
 nrow(OTref2Pos %>% filter(Book != "Psalms"))  / 156
-
-vpc <- OTref2Pos %>%
-    filter(Book != "Psalms") %>%
-    group_by(Book, Chapter) %>%
-    summarize(VersesPerChapter = n()) %>%
-    ungroup()
