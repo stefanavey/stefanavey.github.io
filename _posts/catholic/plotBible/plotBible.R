@@ -8,7 +8,6 @@
 library(readxl)
 library(scales)
 library(tidyverse)
-library(stringr)                        # string functions
 library(aveytoolkit)
 OTRefFile <- "OldTestamentReference.xlsx"
 NTRefFile <- "NewTestamentReference.xlsx"
@@ -362,7 +361,8 @@ book_dat <- ref2Pos %>%
     ungroup()
 
     
-pdf("Barplot_days=Sundays_books=ALL_format=bookshelf.pdf", height = 12, width = 8)
+## pdf("Barplot_days=Sundays_books=ALL_format=bookshelf.pdf", height = 12, width = 8)
+png("Barplot_days=Sundays_books=ALL_format=bookshelf.png", height = 12, width = 8, units = "in", res = 300)
 gg <- ggplot(dat, x = 0, y = 1) +
     geom_vline(aes(xintercept = Pos, color = Abbrv), show.legend = FALSE) +
     geom_label(data = book_dat, aes(x = Pos, y = y, label = Abbrv),
