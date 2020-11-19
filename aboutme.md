@@ -9,7 +9,7 @@ I was born in Ontario, Canada and raised in Southwest Florida.  I attended under
 
 I completed my PhD in the [Interdepartmental Program in Computational Biology and Bioinformatics](http://cbb.yale.edu/) at Yale University. My research focused on mining biological data to understand the immune response to influenza infection and vaccination. I developed and applied machine learning methods and software to facilitate the discovery of predictive immune signatures.
 
-My background in biomedical knowledge and computational methods combined with my scientific training has led me to recently join the quantitative sciences group at [Janssen Pharmaceuticals Company of Johnson and Johnson](http://www.janssen.com/).
+My background in biomedical knowledge and computational methods combined with my scientific training led me to where I currently work at the [Janssen Pharmaceutical Companies of Johnson and Johnson](http://www.janssen.com/).
 
 # Contact
 
